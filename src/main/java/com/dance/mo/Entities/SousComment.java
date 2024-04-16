@@ -1,10 +1,12 @@
 package com.dance.mo.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @Entity
@@ -18,9 +20,12 @@ public class SousComment implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scommentId;
     private String content;
-    private LocalDate commentDate;
-
+    private Date commentDate;
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "comment_id")
-    private Comment parentComment;
+    private Comment comment;
+    @JsonIgnore
+    @ManyToOne()
+    private User user;
+
 }

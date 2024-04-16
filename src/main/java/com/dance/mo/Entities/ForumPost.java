@@ -7,6 +7,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -15,23 +16,30 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class ForumPost implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
     private String title;
-    private String content;
-    private LocalDate postDate;
-    @JsonIgnore
-    @OneToMany( cascade = CascadeType.ALL,mappedBy = "forumPost")
-    private List<Comment> comments = new ArrayList<>();
 
-    @ManyToOne
-    private User author;
+    private String postContent;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date postDate;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ForumPost")
-    private Set<React> reacts ;
+
+    private float postRatingScore;
+    private String imageUrl;
+
+
+    @OneToMany( mappedBy="forumPost")
+    private Set<Comment> comments;
+
+
+    @ManyToOne(cascade = CascadeType.ALL )
+    @JoinColumn(name ="postCreator ")
+    private User postCreator;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy ="forumPost" )
+    List<React>reacts;
 
 }

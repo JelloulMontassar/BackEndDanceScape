@@ -1,13 +1,16 @@
 package com.dance.mo.Entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -21,15 +24,22 @@ public class Comment implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
     private String content;
-    private LocalDate commentDate;
+    private Date commentDate;
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "comment")
-    private List<ReactComment> reactComments = new ArrayList<>();
+    @JsonIgnore
+    @ManyToOne()
+    private ForumPost forumPost;
+    @JsonIgnore
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<ReactComment> reactsReactComments;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentComment")
-    private List<SousComment> sousComments = new ArrayList<>();
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private Set<SousComment> sousComments;
 
-    @ManyToOne
-    private ForumPost forumPost ;
+    @ManyToOne( )
+    private User user;
+
+
 }
+

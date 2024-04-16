@@ -1,8 +1,11 @@
 package com.dance.mo.Controller;
 
+import com.dance.mo.Entities.Notification;
 import com.dance.mo.Exceptions.UserException;
 import com.dance.mo.Entities.User;
+import com.dance.mo.Services.NotificationService;
 import com.dance.mo.Services.UserService;
+import org.aspectj.weaver.ast.Not;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +22,19 @@ import java.util.List;
 public class AdminController {
     @Autowired
     UserService userService;
+    @Autowired
+    private NotificationService notificationService;
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+    @GetMapping("/notifications")
+    public List<Notification> getAllNotifications() {
+        return notificationService.getLatestNotifications();
+    }
+    @PostMapping("/notifications/{notificationId}")
+    public Notification openNotification(@PathVariable Long notificationId) {
+        Notification notification = notificationService.getNotification(notificationId);
+        notification.setSeen(true);
+        return notificationService.saveNotification(notification);
+    }
     ///ADD USER
     @PostMapping("/addUser")
     public ResponseEntity addUserResponse(@RequestBody User user){

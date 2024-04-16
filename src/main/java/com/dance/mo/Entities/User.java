@@ -1,6 +1,9 @@
 package com.dance.mo.Entities;
 
 
+import com.dance.mo.Config.GrantedAuthorityDeserializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -10,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +45,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+
     private boolean enabled;
     private long resetToken;
     @Lob
@@ -50,13 +55,25 @@ public class User implements UserDetails {
     private static byte[] defaultProfileImage;
     private Integer phoneNumber;
 
-
+    Integer ban=0;
+    LocalDateTime banTime;
 
 
     ///////REL
-    @OneToMany(cascade= CascadeType.ALL, mappedBy = "author")
+    @JsonIgnore
+    @OneToMany(mappedBy = "postCreator")
     private List<ForumPost> forumPosts;
 
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<SousComment> sousComments;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
+    List<React>reacts;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     private List<ChatRoom> chatRooms;
 
@@ -71,16 +88,19 @@ public class User implements UserDetails {
 
     @ManyToMany(cascade = CascadeType.ALL , mappedBy = "resUsers")
     private List<Result> results;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Reclamation> reclamations;
 
 ////////
 ///return list of roles
 
     ///get all the authoroties from roles
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-       return  List.of(new SimpleGrantedAuthority(role.name()));
-
+        return null;
     }
 
     @Override

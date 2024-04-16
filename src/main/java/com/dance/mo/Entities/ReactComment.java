@@ -17,14 +17,15 @@ import java.time.LocalDate;
 public class ReactComment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reactId;
+    private Long reactsId;
     private LocalDate dateReact;
 
     @Enumerated(EnumType.STRING)
     private ReactType reactType;
 
     @ManyToOne
-    @JoinColumn(name = "comment_id") // Adjust the column name based on your database schema
     private Comment comment;
+
+
 
 }

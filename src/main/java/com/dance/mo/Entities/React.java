@@ -1,5 +1,6 @@
 package com.dance.mo.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,10 +20,12 @@ public class React implements Serializable {
     private Long reactId;
     private boolean liked;
     private boolean dislike;
-    private LocalDate dateReact;
+    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.ALL)
+    private ForumPost forumPost;
+    @ManyToOne(cascade = CascadeType.ALL)
+    User user;
 
 
 
-    @ManyToOne
-    private ForumPost ForumPost;
 }

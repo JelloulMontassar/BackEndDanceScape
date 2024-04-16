@@ -25,11 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Objects;
-
-
+import java.util.*;
 
 
 @RestController
@@ -45,6 +41,7 @@ public class AuthenticationController {
     private final JwtService jwtService;
     private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
+    private final Set<String> onlineUsers = new HashSet<>();
     private static final String CONFIRMATION_URL = "http://localhost:4200/forgot-password/%s";
     ///  endpoint : authenticate an existing user
     @PostMapping("/logout")
@@ -102,10 +99,15 @@ public class AuthenticationController {
                         .messageResponse("An error occurred during password reset")
                         .build());
     }
+    @GetMapping("/onlineUsers")
+    public Set<String> getOnlineUsers() {
+        return onlineUsers;
+    }
     @PostMapping("/auth")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         try {
             AuthenticationResponse response = service.authenticate(request);
+            onlineUsers.add(response.getEmail());
             return ResponseEntity.ok(response);
         }
         catch (UserException e) {
