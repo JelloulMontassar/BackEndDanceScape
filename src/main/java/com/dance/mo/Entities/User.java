@@ -2,7 +2,9 @@ package com.dance.mo.Entities;
 
 
 import com.dance.mo.Config.GrantedAuthorityDeserializer;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -57,8 +59,14 @@ public class User implements UserDetails {
 
     Integer ban=0;
     LocalDateTime banTime;
-
-
+    @JsonBackReference
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private List<User> friends;
     ///////REL
     @JsonIgnore
     @OneToMany(mappedBy = "postCreator")
@@ -145,5 +153,17 @@ public class User implements UserDetails {
         if (profileImage == null || profileImage.length == 0) {
             profileImage = defaultProfileImage;
         }
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return userId != null && userId.equals(user.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId);
     }
 }

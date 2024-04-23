@@ -32,7 +32,13 @@ public class ReclamationController {
     public ReclamationController(ReclamationService reclamationService) {
         this.reclamationService = reclamationService;
     }
-
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Reclamation>> getAllReclamationsByUser(@PathVariable Long userId) {
+        User user = new User();
+        user.setUserId(userId);
+        List<Reclamation> reclamations = reclamationService.getAllReclamationsByUser(user);
+        return ResponseEntity.ok(reclamations);
+    }
     @GetMapping
     public List<Reclamation> getAllReclamations() {
         return reclamationService.getAllReclamations();
@@ -49,6 +55,17 @@ public class ReclamationController {
         rec.setResult("resolved");
         Reclamation updated = reclamationService.createReclamation(rec);
         ReclamationDTO recDTO = mapReclamationToDTO(updated);
+        Notification notification = new Notification();
+        notification.setReceiver(rec.getUser());
+        notification.setStatus(rec.getStatus());
+        notification.setMessage("Your reclamation has been resolved.");
+        notification.setSendDate(Date.valueOf(rec.getReclamationDate()));
+        notification.setReclamationId(rec.getId());
+        notification.setSeen(false);
+        String userId = rec.getUser().getUserId().toString();
+        String destination = "/topic/notifications/" + userId;
+        notificationService.sendNotification(notification);
+        messagingTemplate.convertAndSend(destination, notification);
         return new ResponseEntity<>(recDTO, HttpStatus.ACCEPTED);
     }
 

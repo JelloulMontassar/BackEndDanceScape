@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Key;
+import java.security.Principal;
 import java.util.*;
 
 
@@ -41,14 +42,17 @@ public class AuthenticationController {
     private final JwtService jwtService;
     private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
-    private final Set<String> onlineUsers = new HashSet<>();
+    public static Set<String> onlineUsers = new HashSet<>();
     private static final String CONFIRMATION_URL = "http://localhost:4200/forgot-password/%s";
     ///  endpoint : authenticate an existing user
-    @PostMapping("/logout")
+
+
+    @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("test");
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
         SecurityContextHolder.clearContext();
         request.getSession().invalidate();
+        onlineUsers.remove(email);
         return ResponseEntity.status(HttpStatus.OK).body("Logged out successfully");
     }
     private Key getSignInKey() {

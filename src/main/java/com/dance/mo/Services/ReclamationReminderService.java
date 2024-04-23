@@ -30,8 +30,8 @@ public class ReclamationReminderService {
     @Autowired
     private EntityManager entityManager;
     @Transactional
-    //@Scheduled(cron = "0 0 8 * * *")
-    @Scheduled(fixedRate = 20000)
+    @Scheduled(cron = "0 0 8 * * *")
+    //@Scheduled(fixedRate = 20000)
     public void remindAdminOfUnresolvedReclamations() {
         List<Reclamation> unresolvedReclamations = reclamationRepository.findByResult("Not resolved");
         if (!unresolvedReclamations.isEmpty()) {

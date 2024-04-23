@@ -86,7 +86,12 @@ public class UserService {
         // Save the updated user
         return userRepository.save(user);
     }
-
+    public User getUserByEmail(String email){
+        return userRepository.getUserByEmail(email);
+    }
+    public List<User> getFriendList(User currentUser) {
+        return currentUser.getFriends();
+    }
 
 
 
